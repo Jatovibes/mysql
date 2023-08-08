@@ -55,7 +55,7 @@ class DB:
         self.__cursor = self.__db.cursor()
 
     def add_new_product(self, product: Product):
-        self.__cursor.execute(f'INSERT INTO {self.productT} (name, category,price, stock_quantity) VALUES (%s, %s,%s,%s)', (product.productID, product.name, product.category, product.stock_quantity))
+        self.__cursor.execute(f'INSERT INTO {self.productT} (name, category,price, stock_quantity) VALUES (%s, %s,%s,%s)', (product.productID, product.productname, product.category, product.stock_quantity))
         self.__db.commit()
 
         
@@ -71,7 +71,26 @@ class DB:
         self.__cursor.execute(f'UPDATE {self.productT} SET name = {product.productname}, category = {product.category}, price = {product.price}, stock_quantity = {product.stock_quantity} WHERE product_id = {product.productID}')
         self.__db.commit()    
 
-        
+    
+    def get_all_data(self, tableName):
+        self.__cursor.execute(f'SELECT * FROM {tableName}')
+        return self.__cursor.fetchall()
+
+    def new_customer(self, customer: Customer):
+        self.__cursor.execute(f'INSERT INTO {self.customerT} (name,email,address) VALUES (%s,%s,%s)', (customer.name, customer.email, customer.shipping_address))
+        self.__db.commit()
+
+    def update_customer(self, customer: Customer):
+        self.__cursor.execute(f'UPDATE {self.customerT} SET name = {customer.name}, email = {customer.email}, address = {customer.shipping_address} WHERE cust_id = {customer.customerID}')
+        self.__db.commit()
+
+    def place_order(self):
+        self.__cursor.execute(f'INSERT INTO {self.orderT} (cust_id,total_amount) VALUES(%s,%s)', )
+        self.__db.commit()
+
+    def get_order(self, tableName, id):
+        self.__cursor.execute(f'SELECT * FROM {tableName} WHERE cust_id = {id}')
+        print(self.__cursor.fetchall())    
 
 class ShoppingSystem:   
     def __init__(self) -> None:
@@ -88,14 +107,14 @@ class ShoppingSystem:
             self.db.add_new_product(product)
             print('success') 
 
-    def remove_product_from_db(self, productID: id ):
+    def remove_product_from_db(self, productID):
         for product in self.db.all_product():
             if product.productID == productID:
                 self.db.remove_product(product)
                 return 'removed'
             return 'not found'
         
-    def update_product_info(self, productID, price, stock_quantity):    
+    def update_product_info(self, productID):    
         for product in self.db.all_product():
             if product['productID'] == productID:
                 self.db.update_product
@@ -103,11 +122,13 @@ class ShoppingSystem:
 
         else:
             print('product not found')
+
+    def register_customer(self, customer,id):
+        self.db.new_customer(customer,id)
+        print('new customer has been registered')   
+
+
     
-
-
-
-
 
 def main():
     print("Welcome to SuperMart - Your Online Shopping Destination!")
@@ -126,27 +147,4 @@ def main():
 
         choice = input("\nPlease enter your choice: ")
 
-        if choice == '1':
-            # Implement browsing products functionality
-        elif choice == '2':
-            # Implement adding a product to cart functionality
-        elif choice == '3':
-            # Implement viewing cart functionality
-        elif choice == '4':
-            # Implement placing an order functionality
-        elif choice == '5':
-            # Implement viewing order history functionality
-        elif choice == '6':
-            # Implement registering as a new customer functionality
-        elif choice == '7':
-            # Implement updating customer information functionality
-        elif choice == '8':
-            print("Thank you for shopping at SuperMart! Goodbye!")
-            shopping_system.conn.close()
-            break
-        else:
-            print("Invalid choice. Please enter a valid option.")
-
-if name == "main":
-    main()
 
